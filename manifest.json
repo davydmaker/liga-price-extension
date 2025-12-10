@@ -6,7 +6,6 @@
   "description": "Busque preços de cartas de Magic: The Gathering do site LigaMagic",
   "author": "davydmaker",
   "homepage_url": "https://github.com/davydmaker/liga-price-extension",
-  "default_locale": "pt_BR",
   "permissions": [
     "downloads",
     "storage",
