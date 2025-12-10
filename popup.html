@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LigaPrice</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!-- Tela de Aceitação de Termos (primeira vez) -->
+    <div id="terms-screen" class="terms-screen" style="display: none">
+      <div class="terms-content">
+        <h1>Aviso Legal</h1>
+        <div class="terms-text">
+          <p>
+            <strong>IMPORTANTE:</strong> Ao utilizar esta extensão, você
+            concorda com os seguintes termos e condições.
+          </p>
+
+          <h3>ATENÇÃO - RISCO DE VIOLAÇÃO</h3>
+          <p>
+            Os Termos e Condições Gerais de Uso do LigaMagic (Cláusula 10)
+            proíbem expressamente a "utilização de nenhum dispositivo, software
+            ou outro recurso que venha a interferir nas atividades e operações
+            da LIGAMAGIC".
+          </p>
+
+          <p>
+            Esta extensão utiliza técnicas de web scraping que podem ser
+            consideradas como interferência nas operações do site, conforme
+            definido nos termos de uso do LigaMagic.
+          </p>
+
+          <p><strong>Documentos oficiais do LigaMagic:</strong></p>
+          <ul>
+            <li>
+              <a
+                href="https://www.ligamagic.com.br/?view=privacidade"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="terms-link"
+                >Política de Proteção de Dados Pessoais</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.ligamagic.com.br/?view=avisolegal"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="terms-link"
+                >Aviso Legal do LigaMagic</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.ligamagic.com.br/?view=contrato"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="terms-link"
+                >Termos e Condições Gerais de Uso</a
+              >
+            </li>
+          </ul>
+
+          <p>
+            <strong
+              >O uso desta extensão pode violar os Termos e Condições Gerais de
+              Uso do LigaMagic, podendo resultar em:</strong
+            >
+          </p>
+          <ul>
+            <li>Suspensão ou cancelamento de cadastro no site LigaMagic</li>
+            <li>Bloqueio de acesso ao site</li>
+            <li>Ações legais por parte do LigaMagic</li>
+            <li>Indenizações por danos causados</li>
+          </ul>
+
+          <h3>Responsabilidades</h3>
+          <p>
+            Você é <strong>totalmente responsável</strong> pelo uso que faz
+            desta ferramenta e assume todos os riscos decorrentes do uso,
+            incluindo suspensão de cadastro, bloqueio de acesso e ações legais.
+          </p>
+
+          <p>Esta extensão:</p>
+          <ul>
+            <li>
+              <strong>NÃO é oficial</strong> e não possui qualquer relação,
+              afiliação ou autorização do LigaMagic
+            </li>
+            <li>
+              <strong>NÃO comercializa</strong> dados ou informações do site
+              LigaMagic
+            </li>
+            <li>
+              <strong>NÃO redistribui</strong> conteúdo protegido por direitos
+              autorais
+            </li>
+            <li>É apenas para <strong>uso pessoal</strong> e não comercial</li>
+          </ul>
+
+          <p>
+            Para ler o aviso legal completo, clique em
+            <a href="#" id="terms-full-link" class="terms-link"
+              >Ver aviso legal completo</a
+            >.
+          </p>
+        </div>
+
+        <div class="terms-actions">
+          <button id="accept-terms-btn" class="btn-primary">
+            Aceito os termos e condições
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aviso quando não estiver no LigaMagic -->
+    <div id="warning-screen" class="warning-screen" style="display: none">
+      <div class="warning-content">
+        <div class="warning-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"
+              fill="currentColor"
+            />
+            <path d="M11 9v4h2V9h-2zm0 6v2h2v-2h-2z" fill="currentColor" />
+          </svg>
+        </div>
+        <h2>Acesso Restrito</h2>
+        <p>
+          Esta extensão só pode ser usada quando você estiver navegando no site
+          <strong>LigaMagic</strong>.
+        </p>
+        <p>
+          Por favor, abra o site
+          <a
+            href="https://www.ligamagic.com.br"
+            target="_blank"
+            class="warning-link"
+            >www.ligamagic.com.br</a
+          >
+          e tente novamente.
+        </p>
+        <button id="open-ligamagic-btn" class="btn-primary">
+          Abrir LigaMagic
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal de Alerta -->
+    <div id="alert-modal" class="alert-modal" style="display: none">
+      <div class="alert-modal-overlay"></div>
+      <div class="alert-modal-content">
+        <div class="alert-modal-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"
+              fill="currentColor"
+            />
+            <path d="M11 9v4h2V9h-2zm0 6v2h2v-2h-2z" fill="currentColor" />
+          </svg>
+        </div>
+        <h3 class="alert-modal-title">Atenção</h3>
+        <p class="alert-modal-message" id="alert-modal-message"></p>
+        <button id="alert-modal-ok" class="btn-primary alert-modal-btn">
+          OK
+        </button>
+      </div>
+    </div>
+
+    <div class="container" id="main-container" style="display: none">
+      <header>
+        <h1>LigaPrice</h1>
+        <p class="subtitle">
+          Busque preços de cartas de Magic: The Gathering na LigaMagic
+        </p>
+      </header>
+
+      <div class="input-section">
+        <label for="decklist-input"
+          >Cole sua decklist (uma carta por linha):</label
+        >
+        <textarea
+          id="decklist-input"
+          placeholder="Act of Treason [GTC]&#10;Act of Treason [M10]&#10;Ajani's Presence&#10;Arcanist's Owl [NEC]"
+          rows="8"
+        ></textarea>
+
+        <div class="file-input-wrapper">
+          <label for="file-input" class="file-label"
+            >Ou selecione um arquivo</label
+          >
+          <input
+            type="file"
+            id="file-input"
+            accept=".txt"
+            style="display: none"
+          />
+        </div>
+
+        <div class="config-section">
+          <label for="batch-size">Cartas processadas em paralelo:</label>
+          <input type="number" id="batch-size" min="1" max="5" value="5" />
+        </div>
+
+        <button id="process-btn" class="btn-primary">Processar</button>
+        <button id="cancel-btn" class="btn-secondary" style="display: none">
+          Cancelar
+        </button>
+      </div>
+
+      <div id="progress-section" class="progress-section" style="display: none">
+        <div class="progress-bar-container">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="progress-text" class="progress-text">Processando...</p>
+      </div>
+
+      <div id="log-section" class="log-section" style="display: none">
+        <div class="log-header">
+          <span>Logs</span>
+        </div>
+        <div id="log-content" class="log-content"></div>
+      </div>
+
+      <div id="result-section" class="result-section" style="display: none">
+        <button id="download-btn" class="btn-primary">Baixar CSV</button>
+      </div>
+
+      <footer class="footer">
+        <p class="footer-disclaimer">
+          Esta extensão não é oficial e não possui afiliação com o LigaMagic.
+          Uso por sua conta e risco.
+          <a href="#" id="legal-link" class="disclaimer-link"
+            >Ver aviso legal completo</a
+          >
+        </p>
+        <p class="footer-credits">
+          made with
+          <svg
+            class="heart-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              fill="currentColor"
+            />
+          </svg>
+          by
+          <a
+            href="https://davydmaker.com.br/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer-link"
+            >dvd</a
+          >
+        </p>
+      </footer>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/htmlParser.js"></script>
+    <script src="js/priceExtractor.js"></script>
+    <script src="js/fileHandler.js"></script>
+    <script src="js/scraper.js"></script>
+    <script src="js/batchProcessor.js"></script>
+    <script src="js/popup.js"></script>
+  </body>
+</html>
