@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "LigaPrice",
   "short_name": "LigaPrice",
-  "version": "1.0.0",
-  "description": "Busque preços de cartas de Magic: The Gathering do site LigaMagic",
+  "version": "1.1.0",
+  "description": "Busque preços de cartas em todas as lojas da Liga (Magic, DragonBall, Vanguard, FAB, YuGiOh, Pokemon)",
   "author": "davydmaker",
   "homepage_url": "https://github.com/davydmaker/liga-price-extension",
   "permissions": [
@@ -12,7 +12,13 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://www.ligamagic.com.br/*"
+    "https://ligamagic.com.br/*",
+    "https://masters.ligadragonball.com.br/*",
+    "https://fusion.ligadragonball.com.br/*",
+    "https://ligavanguard.com.br/*",
+    "https://ligafab.com.br/*",
+    "https://ligayugioh.com.br/*",
+    "https://ligapokemon.com.br/*"
   ],
   "web_accessible_resources": [
     {
@@ -26,7 +32,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "LigaPrice - Buscar preços de cartas de Magic",
+    "default_title": "LigaPrice - Buscar preços de cartas",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

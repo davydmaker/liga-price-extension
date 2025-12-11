@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Suporte e Perguntas Gerais
+    url: https://github.com/davydmaker/liga-price-extension/issues/new/choose
+    about: Abra uma issue para fazer perguntas ou obter ajuda
+  - name: Código de Conduta
+    url: https://github.com/davydmaker/liga-price-extension/blob/main/extension/.github/CODE_OF_CONDUCT.md
+    about: Leia nosso código de conduta antes de participar

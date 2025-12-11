@@ -2,15 +2,16 @@ let currentDeck = null;
 let isProcessing = false;
 let cancelRequested = false;
 
-async function checkLigaMagicSite() {
+async function checkLigaSite() {
   try {
     const [tab] = await chrome.tabs.query({
       active: true,
-      currentWindow: true,
+      currentWindow: true
     });
     if (tab?.url) {
       const url = new URL(tab.url);
-      return url.hostname === "www.ligamagic.com.br" || url.hostname === "ligamagic.com.br";
+      const hostname = url.hostname.replace(/^www\./, '');
+      return CONFIG.isLigaSite(hostname);
     }
     return false;
   } catch {
@@ -18,117 +19,203 @@ async function checkLigaMagicSite() {
   }
 }
 
+async function getCurrentLigaSite() {
+  try {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
+    if (tab?.url) {
+      const url = new URL(tab.url);
+      const hostname = url.hostname.replace(/^www\./, '');
+      return CONFIG.getSiteName(hostname);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function showAlert(message) {
-  const modal = document.getElementById("alert-modal");
-  const messageElement = document.getElementById("alert-modal-message");
-  const okButton = document.getElementById("alert-modal-ok");
+  const modal = document.getElementById('alert-modal');
+  const messageElement = document.getElementById('alert-modal-message');
+  const okButton = document.getElementById('alert-modal-ok');
 
   if (!modal || !messageElement || !okButton) return;
 
   messageElement.textContent = message;
-  modal.style.display = "flex";
+  modal.style.display = 'flex';
 
   okButton.onclick = () => {
-    modal.style.display = "none";
+    modal.style.display = 'none';
   };
 
-  const overlay = modal.querySelector(".alert-modal-overlay");
+  const overlay = modal.querySelector('.alert-modal-overlay');
   if (overlay) {
     overlay.onclick = () => {
-      modal.style.display = "none";
+      modal.style.display = 'none';
     };
   }
 
   const handleEsc = (e) => {
-    if (e.key === "Escape") {
-      modal.style.display = "none";
-      document.removeEventListener("keydown", handleEsc);
+    if (e.key === 'Escape') {
+      modal.style.display = 'none';
+      document.removeEventListener('keydown', handleEsc);
     }
   };
-  document.addEventListener("keydown", handleEsc);
+  document.addEventListener('keydown', handleEsc);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const termsScreen = document.getElementById("terms-screen");
-  const mainContainer = document.getElementById("main-container");
-  const warningScreen = document.getElementById("warning-screen");
-  const acceptTermsBtn = document.getElementById("accept-terms-btn");
-  const termsFullLink = document.getElementById("terms-full-link");
-  const openLigamagicBtn = document.getElementById("open-ligamagic-btn");
+document.addEventListener('DOMContentLoaded', async () => {
+  const termsScreen = document.getElementById('terms-screen');
+  const mainContainer = document.getElementById('main-container');
+  const warningScreen = document.getElementById('warning-screen');
+  const acceptTermsBtn = document.getElementById('accept-terms-btn');
+  const termsFullLink = document.getElementById('terms-full-link');
+  const ligaSitesButtons = document.getElementById('liga-sites-buttons');
 
-  function showScreen(screen) {
-    if (termsScreen) termsScreen.style.display = screen === "terms" ? "flex" : "none";
-    if (mainContainer) mainContainer.style.display = screen === "main" ? "block" : "none";
-    if (warningScreen) warningScreen.style.display = screen === "warning" ? "flex" : "none";
-  }
+  if (ligaSitesButtons) {
+    const sites = CONFIG.LIGA_SITES;
+    Object.keys(sites).forEach((hostname) => {
+      const site = sites[hostname];
+      const button = document.createElement('button');
+      button.className = 'liga-site-btn';
+      button.textContent = site.name;
 
-  if (openLigamagicBtn) {
-    openLigamagicBtn.addEventListener("click", () => {
-      chrome.tabs.create({
-        url: "https://www.ligamagic.com.br",
+      if (site.theme) {
+        button.style.backgroundColor = site.theme.primary;
+        button.style.color = 'white';
+        button.style.border = 'none';
+        button.style.borderRadius = '4px';
+        button.style.cursor = 'pointer';
+        button.style.transition = 'all 0.2s';
+        button.style.fontWeight = '600';
+
+        // Hover effect
+        button.addEventListener('mouseenter', () => {
+          button.style.backgroundColor =
+            site.theme.primaryHover || site.theme.primary;
+        });
+        button.addEventListener('mouseleave', () => {
+          button.style.backgroundColor = site.theme.primary;
+        });
+      }
+
+      button.addEventListener('click', () => {
+        chrome.tabs.create({ url: `https://${hostname}` });
       });
+      ligaSitesButtons.appendChild(button);
     });
   }
 
-  const isOnLigaMagic = await checkLigaMagicSite();
+  function showScreen(screen) {
+    if (termsScreen)
+      termsScreen.style.display = screen === 'terms' ? 'flex' : 'none';
+    if (mainContainer)
+      mainContainer.style.display = screen === 'main' ? 'block' : 'none';
+    if (warningScreen)
+      warningScreen.style.display = screen === 'warning' ? 'flex' : 'none';
+  }
 
-  if (!isOnLigaMagic) {
-    showScreen("warning");
+  const isOnLigaSite = await checkLigaSite();
+
+  if (!isOnLigaSite) {
+    showScreen('warning');
     return;
   }
 
-  chrome.storage.local.get(["termsAccepted"], (result) => {
+  const [tab] = await chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  });
+
+  const dynamicSubtitle = document.getElementById('dynamic-subtitle');
+  const subtitleHint = document.getElementById('subtitle-hint');
+
+  if (tab?.url) {
+    const url = new URL(tab.url);
+    const hostname = url.hostname.replace(/^www\./, '');
+
+    CONFIG.applyTheme(hostname);
+
+    if (CONFIG.isLigaSite(hostname)) {
+      const siteName = CONFIG.getSiteName(hostname);
+      const gameName = CONFIG.getGameName(hostname);
+      if (dynamicSubtitle) {
+        dynamicSubtitle.textContent = `Buscando preços de cartas de <b>${gameName}</b> na <b>${siteName}</b>`;
+      }
+      if (subtitleHint) {
+        subtitleHint.style.display = 'block';
+      }
+    } else {
+      if (dynamicSubtitle) {
+        dynamicSubtitle.textContent = 'Abra um site da Liga para começar';
+      }
+      if (subtitleHint) {
+        subtitleHint.style.display = 'none';
+      }
+    }
+  } else {
+    if (dynamicSubtitle) {
+      dynamicSubtitle.textContent = 'Abra um site da Liga para começar';
+    }
+    if (subtitleHint) {
+      subtitleHint.style.display = 'none';
+    }
+  }
+
+  chrome.storage.local.get(['termsAccepted'], (result) => {
     if (result.termsAccepted) {
-      showScreen("main");
+      showScreen('main');
       initMainInterface();
     } else {
-      showScreen("terms");
+      showScreen('terms');
     }
   });
 
   if (acceptTermsBtn) {
-    acceptTermsBtn.addEventListener("click", async () => {
-      const isOnLigaMagic = await checkLigaMagicSite();
-      if (!isOnLigaMagic) {
-        showScreen("warning");
+    acceptTermsBtn.addEventListener('click', async () => {
+      const isOnLigaSite = await checkLigaSite();
+      if (!isOnLigaSite) {
+        showScreen('warning');
         return;
       }
 
       chrome.storage.local.set({ termsAccepted: true }, () => {
-        showScreen("main");
+        showScreen('main');
         initMainInterface();
       });
     });
   }
 
   if (termsFullLink) {
-    termsFullLink.addEventListener("click", (e) => {
+    termsFullLink.addEventListener('click', (e) => {
       e.preventDefault();
       chrome.tabs.create({
-        url: chrome.runtime.getURL("legal.html"),
+        url: chrome.runtime.getURL('legal.html')
       });
     });
   }
 
   function initMainInterface() {
-    const decklistInput = document.getElementById("decklist-input");
-    const fileInput = document.getElementById("file-input");
-    const processBtn = document.getElementById("process-btn");
-    const cancelBtn = document.getElementById("cancel-btn");
-    const downloadBtn = document.getElementById("download-btn");
-    const logSection = document.getElementById("log-section");
-    const logContent = document.getElementById("log-content");
-    const progressSection = document.getElementById("progress-section");
-    const resultSection = document.getElementById("result-section");
-    const progressBar = document.getElementById("progress-bar");
-    const progressText = document.getElementById("progress-text");
+    const decklistInput = document.getElementById('decklist-input');
+    const fileInput = document.getElementById('file-input');
+    const processBtn = document.getElementById('process-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const logSection = document.getElementById('log-section');
+    const logContent = document.getElementById('log-content');
+    const progressSection = document.getElementById('progress-section');
+    const resultSection = document.getElementById('result-section');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
 
-    function addLog(message, type = "info") {
-      const lines = message.split("\n");
+    function addLog(message, type = 'info') {
+      const lines = message.split('\n');
 
       lines.forEach((line) => {
         if (line.trim() || lines.length === 1) {
-          const logLine = document.createElement("div");
+          const logLine = document.createElement('div');
           logLine.className = `log-${type}`;
           logLine.textContent = line;
           logContent.appendChild(logLine);
@@ -139,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         requestAnimationFrame(() => {
           const lastChild = logContent.lastElementChild;
           if (lastChild) {
-            lastChild.scrollIntoView({ behavior: "auto", block: "end" });
+            lastChild.scrollIntoView({ behavior: 'auto', block: 'end' });
           } else {
             logContent.scrollTop = logContent.scrollHeight;
           }
@@ -147,24 +234,26 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    chrome.storage.local.get(["batchSize"], (result) => {
+    chrome.storage.local.get(['batchSize'], (result) => {
       if (result.batchSize) {
         const savedValue = parseInt(result.batchSize) || CONFIG.BATCH_SIZE;
         const validValue = Math.min(Math.max(savedValue, 1), 5);
-        document.getElementById("batch-size").value = validValue;
+        document.getElementById('batch-size').value = validValue;
         if (savedValue !== validValue) {
           chrome.storage.local.set({ batchSize: validValue });
         }
       }
     });
 
-    const batchSizeInput = document.getElementById("batch-size");
-    batchSizeInput.addEventListener("change", (e) => {
+    const batchSizeInput = document.getElementById('batch-size');
+    batchSizeInput.addEventListener('change', (e) => {
       let value = parseInt(e.target.value) || CONFIG.BATCH_SIZE;
       if (value > 5) {
         value = 5;
         batchSizeInput.value = 5;
-        showAlert("O número de cartas processadas em paralelo não pode ser maior que 5.");
+        showAlert(
+          'O número de cartas processadas em paralelo não pode ser maior que 5.'
+        );
       }
       if (value < 1) {
         value = 1;
@@ -184,7 +273,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return true;
     }
 
-    fileInput.addEventListener("change", (e) => {
+    fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -193,30 +282,31 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (validateCardCount(fileContent)) {
             decklistInput.value = fileContent;
           } else {
-            fileInput.value = "";
+            fileInput.value = '';
           }
         };
         reader.readAsText(file);
       }
     });
 
-    processBtn.addEventListener("click", async () => {
+    processBtn.addEventListener('click', async () => {
       if (isProcessing) return;
 
-      const isOnLigaMagic = await checkLigaMagicSite();
-      if (!isOnLigaMagic) {
+      const isOnLigaSite = await checkLigaSite();
+      if (!isOnLigaSite) {
+        const supportedSites = CONFIG.getSupportedSiteNames().join(', ');
         showAlert(
-          "Por favor, abra o site www.ligamagic.com.br para usar esta extensão."
+          `Por favor, abra um site da Liga (${supportedSites}) para usar esta extensão.`
         );
-        warningScreen.style.display = "flex";
-        mainContainer.style.display = "none";
+        warningScreen.style.display = 'flex';
+        mainContainer.style.display = 'none';
         return;
       }
 
       const decklistText = decklistInput.value.trim();
       if (!decklistText) {
         return showAlert(
-          "Por favor, cole sua decklist ou selecione um arquivo."
+          'Por favor, cole sua decklist ou selecione um arquivo.'
         );
       }
 
@@ -225,40 +315,62 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       let batchSize =
-        parseInt(document.getElementById("batch-size").value) ||
+        parseInt(document.getElementById('batch-size').value) ||
         CONFIG.BATCH_SIZE;
       if (batchSize < 1) {
-        showAlert("O número de cartas processadas em paralelo deve ser pelo menos 1.");
+        showAlert(
+          'O número de cartas processadas em paralelo deve ser pelo menos 1.'
+        );
         return;
       }
       if (batchSize > 5) {
         batchSize = 5;
-        document.getElementById("batch-size").value = 5;
-        showAlert("O número de cartas processadas em paralelo não pode ser maior que 5. O valor foi ajustado para 5.");
+        document.getElementById('batch-size').value = 5;
+        showAlert(
+          'O número de cartas processadas em paralelo não pode ser maior que 5. O valor foi ajustado para 5.'
+        );
       }
 
       chrome.storage.local.set({ batchSize });
 
-      logContent.innerHTML = "";
-      logSection.style.display = "block";
+      logContent.innerHTML = '';
+      logSection.style.display = 'block';
 
       isProcessing = true;
       cancelRequested = false;
       processBtn.disabled = true;
-      cancelBtn.style.display = "block";
-      resultSection.style.display = "none";
-      progressSection.style.display = "block";
+      cancelBtn.style.display = 'block';
+      resultSection.style.display = 'none';
+      progressSection.style.display = 'block';
 
       try {
         const deck = FileHandler.readList(decklistText);
         currentDeck = deck;
 
         if (deck.cards.length === 0) {
-          throw new Error("Nenhuma carta encontrada na decklist.");
+          throw new Error('Nenhuma carta encontrada na decklist.');
         }
 
-        addLog(`Total de cartas: ${deck.cards.length}`, "info");
-        addLog(`Processando ${batchSize} carta(s) em paralelo...`, "info");
+        const [tab] = await chrome.tabs.query({
+          active: true,
+          currentWindow: true
+        });
+        let currentHostname = null;
+        if (tab?.url) {
+          const url = new URL(tab.url);
+          const hostname = url.hostname.replace(/^www\./, '');
+          currentHostname = CONFIG.isLigaSite(hostname) ? hostname : null;
+        }
+
+        if (!currentHostname) {
+          const supportedSites = CONFIG.getSupportedSiteNames().join(', ');
+          throw new Error(
+            `Site da Liga não detectado. Por favor, abra um site da Liga (${supportedSites}).`
+          );
+        }
+
+        addLog(`Total de cartas: ${deck.cards.length}`, 'info');
+        addLog(`Processando ${batchSize} carta(s) em paralelo...`, 'info');
 
         await BatchProcessor.getCardPrices(
           deck,
@@ -273,55 +385,56 @@ document.addEventListener("DOMContentLoaded", async () => {
             progressBar.style.width = `${percentage}%`;
             progressText.textContent = `Processando grupo ${progress.batch}... (${progress.current}/${progress.total})`;
           },
-          () => cancelRequested
+          () => cancelRequested,
+          currentHostname
         );
 
         if (!cancelRequested) {
-          progressBar.style.width = "100%";
-          progressText.textContent = "Processamento concluído!";
-          resultSection.style.display = "block";
-          addLog("");
-          addLog("Processamento concluído com sucesso!", "success");
+          progressBar.style.width = '100%';
+          progressText.textContent = 'Processamento concluído!';
+          resultSection.style.display = 'block';
+          addLog('');
+          addLog('Processamento concluído com sucesso!', 'success');
         }
       } catch (error) {
-        addLog("");
-        addLog(`ERRO: ${error.message}`, "error");
-        progressText.textContent = "Erro no processamento";
+        addLog('');
+        addLog(`ERRO: ${error.message}`, 'error');
+        progressText.textContent = 'Erro no processamento';
       } finally {
         isProcessing = false;
         processBtn.disabled = false;
-        cancelBtn.style.display = "none";
+        cancelBtn.style.display = 'none';
       }
     });
 
-    cancelBtn.addEventListener("click", () => {
+    cancelBtn.addEventListener('click', () => {
       cancelRequested = true;
-      addLog("");
-      addLog("Processamento cancelado pelo usuário.", "info");
+      addLog('');
+      addLog('Processamento cancelado pelo usuário.', 'info');
       isProcessing = false;
       processBtn.disabled = false;
-      cancelBtn.style.display = "none";
+      cancelBtn.style.display = 'none';
     });
 
-    downloadBtn.addEventListener("click", () => {
+    downloadBtn.addEventListener('click', () => {
       if (!currentDeck) {
-        showAlert("Nenhum resultado disponível para download.");
+        showAlert('Nenhum resultado disponível para download.');
         return;
       }
 
-      const timestamp = Utils.getTimestamp().replace(/[: ]/g, "-");
+      const timestamp = Utils.getTimestamp().replace(/[: ]/g, '-');
       const filename = `ligaprice-${timestamp}.csv`;
       const csvContent = FileHandler.outputList(currentDeck);
 
       Utils.downloadCSV(csvContent, filename);
     });
 
-    const legalLink = document.getElementById("legal-link");
+    const legalLink = document.getElementById('legal-link');
     if (legalLink) {
-      legalLink.addEventListener("click", (e) => {
+      legalLink.addEventListener('click', (e) => {
         e.preventDefault();
         chrome.tabs.create({
-          url: chrome.runtime.getURL("legal.html"),
+          url: chrome.runtime.getURL('legal.html')
         });
       });
     }

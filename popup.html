@@ -19,59 +19,28 @@
 
           <h3>ATENÇÃO - RISCO DE VIOLAÇÃO</h3>
           <p>
-            Os Termos e Condições Gerais de Uso do LigaMagic (Cláusula 10)
-            proíbem expressamente a "utilização de nenhum dispositivo, software
-            ou outro recurso que venha a interferir nas atividades e operações
-            da LIGAMAGIC".
+            Os Termos e Condições Gerais de Uso das lojas da Liga proíbem
+            expressamente a "utilização de nenhum dispositivo, software ou outro
+            recurso que venha a interferir nas atividades e operações" dos
+            sites.
           </p>
 
           <p>
             Esta extensão utiliza técnicas de web scraping que podem ser
-            consideradas como interferência nas operações do site, conforme
-            definido nos termos de uso do LigaMagic.
+            consideradas como interferência nas operações dos sites, conforme
+            definido nos termos de uso das lojas da Liga.
           </p>
-
-          <p><strong>Documentos oficiais do LigaMagic:</strong></p>
-          <ul>
-            <li>
-              <a
-                href="https://www.ligamagic.com.br/?view=privacidade"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="terms-link"
-                >Política de Proteção de Dados Pessoais</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://www.ligamagic.com.br/?view=avisolegal"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="terms-link"
-                >Aviso Legal do LigaMagic</a
-              >
-            </li>
-            <li>
-              <a
-                href="https://www.ligamagic.com.br/?view=contrato"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="terms-link"
-                >Termos e Condições Gerais de Uso</a
-              >
-            </li>
-          </ul>
 
           <p>
             <strong
               >O uso desta extensão pode violar os Termos e Condições Gerais de
-              Uso do LigaMagic, podendo resultar em:</strong
+              Uso das lojas da Liga, podendo resultar em:</strong
             >
           </p>
           <ul>
-            <li>Suspensão ou cancelamento de cadastro no site LigaMagic</li>
-            <li>Bloqueio de acesso ao site</li>
-            <li>Ações legais por parte do LigaMagic</li>
+            <li>Suspensão ou cancelamento de cadastro nos sites</li>
+            <li>Bloqueio de acesso aos sites</li>
+            <li>Ações legais por parte das lojas</li>
             <li>Indenizações por danos causados</li>
           </ul>
 
@@ -86,11 +55,10 @@
           <ul>
             <li>
               <strong>NÃO é oficial</strong> e não possui qualquer relação,
-              afiliação ou autorização do LigaMagic
+              afiliação ou autorização das lojas da Liga
             </li>
             <li>
-              <strong>NÃO comercializa</strong> dados ou informações do site
-              LigaMagic
+              <strong>NÃO comercializa</strong> dados ou informações dos sites
             </li>
             <li>
               <strong>NÃO redistribui</strong> conteúdo protegido por direitos
@@ -115,7 +83,7 @@
       </div>
     </div>
 
-    <!-- Aviso quando não estiver no LigaMagic -->
+    <!-- Aviso quando não estiver em um site da Liga -->
     <div id="warning-screen" class="warning-screen" style="display: none">
       <div class="warning-content">
         <div class="warning-icon">
@@ -133,22 +101,11 @@
         </div>
         <h2>Acesso Restrito</h2>
         <p>
-          Esta extensão só pode ser usada quando você estiver navegando no site
-          <strong>LigaMagic</strong>.
+          Esta extensão só pode ser usada quando você estiver navegando em um
+          site da <strong>Liga</strong>.
         </p>
-        <p>
-          Por favor, abra o site
-          <a
-            href="https://www.ligamagic.com.br"
-            target="_blank"
-            class="warning-link"
-            >www.ligamagic.com.br</a
-          >
-          e tente novamente.
-        </p>
-        <button id="open-ligamagic-btn" class="btn-primary">
-          Abrir LigaMagic
-        </button>
+        <p>Por favor, escolha um dos sites suportados para abrir:</p>
+        <div id="liga-sites-buttons" class="liga-sites-buttons"></div>
       </div>
     </div>
 
@@ -180,8 +137,9 @@
     <div class="container" id="main-container" style="display: none">
       <header>
         <h1>LigaPrice</h1>
-        <p class="subtitle">
-          Busque preços de cartas de Magic: The Gathering na LigaMagic
+        <p class="subtitle" id="dynamic-subtitle">Carregando...</p>
+        <p class="subtitle-hint" id="subtitle-hint">
+          Para buscar preços em outras lojas, abra a extensão na loja desejada
         </p>
       </header>
 
@@ -238,8 +196,8 @@
 
       <footer class="footer">
         <p class="footer-disclaimer">
-          Esta extensão não é oficial e não possui afiliação com o LigaMagic.
-          Uso por sua conta e risco.
+          Esta extensão não é oficial e não possui afiliação com as lojas da
+          Liga. Uso por sua conta e risco.
           <a href="#" id="legal-link" class="disclaimer-link"
             >Ver aviso legal completo</a
           >

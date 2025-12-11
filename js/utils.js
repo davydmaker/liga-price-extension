@@ -6,11 +6,11 @@ class Utils {
   static getTimestamp() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
 
@@ -21,11 +21,11 @@ class Utils {
    */
   static formatErrorMessage(error) {
     let errorMsg = String(error);
-    if (errorMsg.includes("\n")) {
-      errorMsg = errorMsg.split("\n")[0];
+    if (errorMsg.includes('\n')) {
+      errorMsg = errorMsg.split('\n')[0];
     }
-    if (errorMsg.includes(":")) {
-      errorMsg = errorMsg.split(":").slice(-1)[0].trim();
+    if (errorMsg.includes(':')) {
+      errorMsg = errorMsg.split(':').slice(-1)[0].trim();
     }
     return errorMsg;
   }
@@ -45,12 +45,12 @@ class Utils {
    * @param {string} filename - File name
    */
   static downloadCSV(content, filename) {
-    const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     chrome.downloads.download({
       url: url,
       filename: filename,
-      saveAs: true,
+      saveAs: true
     });
   }
 
@@ -61,13 +61,13 @@ class Utils {
    */
   static escapeCSV(value) {
     if (value === null || value === undefined) {
-      return "";
+      return '';
     }
     const stringValue = String(value);
     if (
-      stringValue.includes(",") ||
+      stringValue.includes(',') ||
       stringValue.includes('"') ||
-      stringValue.includes("\n")
+      stringValue.includes('\n')
     ) {
       return `"${stringValue.replace(/"/g, '""')}"`;
     }

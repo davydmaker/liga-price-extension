@@ -14,8 +14,8 @@ class HtmlParser {
 
     try {
       let jsonStr = match[1];
-      jsonStr = jsonStr.replace(/\/\/.*$/gm, "");
-      jsonStr = jsonStr.replace(/\/\*.*?\*\//gs, "");
+      jsonStr = jsonStr.replace(/\/\/.*$/gm, '');
+      jsonStr = jsonStr.replace(/\/\*.*?\*\//gs, '');
 
       const editionsData = JSON.parse(jsonStr);
       return editionsData;

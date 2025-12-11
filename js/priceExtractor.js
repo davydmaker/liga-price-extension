@@ -11,8 +11,8 @@ class PriceExtractor {
 
     let normalPrice = null;
 
-    if (typeof priceData === "object" && !Array.isArray(priceData)) {
-      normalPrice = priceData["0"] || priceData[0];
+    if (typeof priceData === 'object' && !Array.isArray(priceData)) {
+      normalPrice = priceData['0'] || priceData[0];
     } else if (Array.isArray(priceData) && priceData.length > 0) {
       normalPrice = priceData[0];
     }
@@ -32,26 +32,26 @@ class PriceExtractor {
       return editionPrices;
     }
 
-    const minVal = normalPrice.p || "";
-    const medVal = normalPrice.m || "";
-    const maxVal = normalPrice.g || "";
+    const minVal = normalPrice.p || '';
+    const medVal = normalPrice.m || '';
+    const maxVal = normalPrice.g || '';
 
     if (minVal) {
-      const parsed = parseFloat(String(minVal).replace(",", "."));
+      const parsed = parseFloat(String(minVal).replace(',', '.'));
       if (!isNaN(parsed)) {
         editionPrices[0] = parsed;
       }
     }
 
     if (medVal) {
-      const parsed = parseFloat(String(medVal).replace(",", "."));
+      const parsed = parseFloat(String(medVal).replace(',', '.'));
       if (!isNaN(parsed)) {
         editionPrices[1] = parsed;
       }
     }
 
     if (maxVal) {
-      const parsed = parseFloat(String(maxVal).replace(",", "."));
+      const parsed = parseFloat(String(maxVal).replace(',', '.'));
       if (!isNaN(parsed)) {
         editionPrices[2] = parsed;
       }
@@ -70,7 +70,7 @@ class PriceExtractor {
     const allPrices = {};
 
     for (const editionData of cardsEditions) {
-      const edCode = (editionData.code || "").toUpperCase();
+      const edCode = (editionData.code || '').toUpperCase();
 
       if (!editionsToFind.includes(null) && !editionsToFind.includes(edCode)) {
         continue;

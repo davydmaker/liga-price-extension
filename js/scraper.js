@@ -46,7 +46,7 @@ class Scraper {
     if (!allPrices || Object.keys(allPrices).length === 0) {
       for (const c of cardsToUpdate) {
         if (!c.observation) {
-          c.observation = "Preços não encontrados";
+          c.observation = 'Preços não encontrados';
         }
       }
       return;
@@ -69,7 +69,7 @@ class Scraper {
       } else {
         c.observation = cardEdition
           ? `Edição [${cardEdition}] não encontrada`
-          : "Preços não encontrados";
+          : 'Preços não encontrados';
       }
     }
   }
@@ -109,10 +109,10 @@ class Scraper {
 
     for (const c of cardsToLog) {
       const cardName = c.name;
-      const edition = c.edition || c.detected_edition || "";
+      const edition = c.edition || c.detected_edition || '';
       const prices = c.prices || [0.0, 0.0, 0.0];
-      const observation = c.observation || "";
-      const editionStr = edition ? ` [${edition}]` : "";
+      const observation = c.observation || '';
+      const editionStr = edition ? ` [${edition}]` : '';
 
       if (success && (prices[0] > 0 || prices[1] > 0 || prices[2] > 0)) {
         const message = `[${timestamp}] ${cardName}${editionStr} - Min R$ ${prices[0].toFixed(
@@ -120,7 +120,7 @@ class Scraper {
         )}, Média R$ ${prices[1].toFixed(2)}, Max R$ ${prices[2].toFixed(2)}`;
         logCallback(message);
       } else {
-        const errorMsg = error || observation || "Preços não encontrados";
+        const errorMsg = error || observation || 'Preços não encontrados';
         const message = `[${timestamp}] ${cardName}${editionStr} - ERRO: ${errorMsg}`;
         logCallback(message);
       }
@@ -128,39 +128,60 @@ class Scraper {
   }
 
   /**
-   * Searches for the price of a card on LigaMagic
+   * Searches for the price of a card on a Liga site
    * @param {Object} card - Card object
    * @param {Array|null} retryQueue - Retry queue (optional)
    * @param {Function|null} logCallback - Log callback (optional)
+   * @param {string|null} hostname - Hostname of the Liga site (required)
    */
-  static async getCardPrice(card, retryQueue = null, logCallback = null) {
-    const isGrouped = "editions" in card && "all_cards" in card;
+  static async getCardPrice(
+    card,
+    retryQueue = null,
+    logCallback = null,
+    hostname = null
+  ) {
+    const isGrouped = 'editions' in card && 'all_cards' in card;
+
+    if (!hostname) {
+      const errorMsg = 'Site da Liga não detectado';
+      Scraper.setObservation(card, errorMsg, isGrouped);
+      Scraper.logCardResult(card, isGrouped, false, errorMsg, logCallback);
+      return;
+    }
+
+    const cardUrlTemplate = CONFIG.getCardUrlTemplate(hostname);
+    if (!cardUrlTemplate) {
+      const errorMsg = `Site ${hostname} não suportado`;
+      Scraper.setObservation(card, errorMsg, isGrouped);
+      Scraper.logCardResult(card, isGrouped, false, errorMsg, logCallback);
+      return;
+    }
 
     const cardName = card.name;
     const cardUrlEncoded = encodeURIComponent(cardName);
-    const url = CONFIG.CARD_URL_TEMPLATE.replace("{card_name}", cardUrlEncoded);
+    const url = cardUrlTemplate.replace('{card_name}', cardUrlEncoded);
 
     try {
       await Utils.sleep(CONFIG.SLEEP_BETWEEN_REQUESTS);
 
       const response = await fetch(url, {
         headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "Accept-Language": "pt-BR,pt;q=0.9",
-        },
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'pt-BR,pt;q=0.9'
+        }
       });
 
       if (response.status === 429) {
-        const observation = "Limite de taxa atingido - será reprocessado";
+        const observation = 'Limite de taxa atingido - será reprocessado';
         Scraper.setObservation(card, observation, isGrouped);
         Scraper.logCardResult(
           card,
           isGrouped,
           false,
-          "429 Muitas Requisições - Adicionado à fila de retry",
+          '429 Muitas Requisições - Adicionado à fila de retry',
           logCallback
         );
 
@@ -173,14 +194,18 @@ class Scraper {
       }
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText || "Erro na requisição"}`);
+        throw new Error(
+          `HTTP ${response.status}: ${
+            response.statusText || 'Erro na requisição'
+          }`
+        );
       }
 
       const html = await response.text();
       const cardsEditions = HtmlParser.extractCardsEditions(html);
 
       if (!cardsEditions) {
-        const observation = "cards_editions não encontrado na página";
+        const observation = 'cards_editions não encontrado na página';
         Scraper.setObservation(card, observation, isGrouped);
         Scraper.logCardResult(card, isGrouped, false, observation, logCallback);
         return;

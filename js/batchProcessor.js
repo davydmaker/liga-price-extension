@@ -27,7 +27,7 @@ class BatchProcessor {
       const mainCard = {
         name: cardName,
         editions: cardList.filter((c) => c.edition).map((c) => c.edition),
-        all_cards: cardList,
+        all_cards: cardList
       };
       groupedCards.push(mainCard);
     }
@@ -84,7 +84,8 @@ class BatchProcessor {
   static async retryFailedCards(
     retryQueue,
     logCallback = null,
-    shouldCancelCallback = null
+    shouldCancelCallback = null,
+    hostname = null
   ) {
     if (retryQueue.length === 0) {
       return;
@@ -92,13 +93,13 @@ class BatchProcessor {
 
     const retryStartTimestamp = Utils.getTimestamp();
     if (logCallback) {
-      logCallback("");
-      logCallback("=".repeat(60));
+      logCallback('');
+      logCallback('='.repeat(60));
       logCallback(
         `[${retryStartTimestamp}] Reprocessando ${retryQueue.length} carta(s) que receberam erro 429...`
       );
-      logCallback("=".repeat(60));
-      logCallback("");
+      logCallback('='.repeat(60));
+      logCallback('');
     }
 
     const seen = new Set();
@@ -113,7 +114,7 @@ class BatchProcessor {
 
     for (let i = 0; i < uniqueRetryQueue.length; i++) {
       if (shouldCancelCallback?.()) {
-        if (logCallback) logCallback("Reprocessamento cancelado.");
+        if (logCallback) logCallback('Reprocessamento cancelado.');
         break;
       }
 
@@ -125,12 +126,12 @@ class BatchProcessor {
       if (logCallback) logCallback(retryMessage);
 
       for (const c of mainCard.all_cards || []) {
-        if (c.observation && c.observation.startsWith("Limite de taxa")) {
-          c.observation = "";
+        if (c.observation && c.observation.startsWith('Limite de taxa')) {
+          c.observation = '';
         }
       }
 
-      await Scraper.getCardPrice(mainCard, null, logCallback);
+      await Scraper.getCardPrice(mainCard, null, logCallback, hostname);
 
       if (i < uniqueRetryQueue.length - 1) {
         await Utils.sleep(CONFIG.SLEEP_AFTER_429);
@@ -140,7 +141,7 @@ class BatchProcessor {
     if (!shouldCancelCallback?.()) {
       const retryEndTimestamp = Utils.getTimestamp();
       if (logCallback) {
-        logCallback("");
+        logCallback('');
         logCallback(`[${retryEndTimestamp}] Reprocessamento concluído.`);
       }
     }
@@ -160,7 +161,8 @@ class BatchProcessor {
     batchSize = CONFIG.BATCH_SIZE,
     logCallback = null,
     progressCallback = null,
-    shouldCancelCallback = null
+    shouldCancelCallback = null,
+    hostname = null
   ) {
     const cardsByName = BatchProcessor.groupCardsByName(deck.cards);
     const groupedCards = BatchProcessor.createGroupedCards(cardsByName);
@@ -168,13 +170,18 @@ class BatchProcessor {
     const totalGroups = groupedCards.length;
     const retryQueue = [];
 
+    if (!hostname) {
+      if (logCallback) logCallback('ERRO: Site da Liga não detectado.');
+      return deck;
+    }
+
     for (
       let batchStart = 0;
       batchStart < totalGroups;
       batchStart += batchSize
     ) {
       if (shouldCancelCallback?.()) {
-        if (logCallback) logCallback("Processamento cancelado.");
+        if (logCallback) logCallback('Processamento cancelado.');
         break;
       }
 
@@ -185,7 +192,7 @@ class BatchProcessor {
       const batchTimestamp = Utils.getTimestamp();
       const batchMessage = `[${batchTimestamp}] Processando lote ${batchNum} (${batch.length} cartas em paralelo)...`;
       if (logCallback) {
-        logCallback("");
+        logCallback('');
         logCallback(batchMessage);
       }
 
@@ -193,18 +200,18 @@ class BatchProcessor {
         progressCallback({
           current: batchStart,
           total: totalGroups,
-          batch: batchNum,
+          batch: batchNum
         });
       }
 
       const promises = batch.map((mainCard) =>
-        Scraper.getCardPrice(mainCard, retryQueue, logCallback)
+        Scraper.getCardPrice(mainCard, retryQueue, logCallback, hostname)
       );
 
       await Promise.all(promises);
 
       if (shouldCancelCallback?.()) {
-        if (logCallback) logCallback("Processamento cancelado.");
+        if (logCallback) logCallback('Processamento cancelado.');
         break;
       }
 
@@ -225,7 +232,8 @@ class BatchProcessor {
       await BatchProcessor.retryFailedCards(
         retryQueue,
         logCallback,
-        shouldCancelCallback
+        shouldCancelCallback,
+        hostname
       );
     }
 

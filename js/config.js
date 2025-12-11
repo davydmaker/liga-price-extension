@@ -7,9 +7,145 @@ const CONFIG = {
   PROGRESSIVE_SLEEP_MULTIPLIERS: {
     low: 1.5,
     medium: 2.0,
-    high: 2.5,
+    high: 2.5
   },
-  CARD_URL_TEMPLATE:
-    "https://www.ligamagic.com.br/?view=cards/card&card={card_name}",
   MAX_UNIQUE_CARDS: 100, // Maximum number of unique cards (same name counts as 1)
+  LIGA_SITES: {
+    'ligamagic.com.br': {
+      name: 'LigaMagic',
+      gameName: 'Magic: The Gathering',
+      template: 'https://ligamagic.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#ff5a00',
+        primaryHover: '#e45000',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'masters.ligadragonball.com.br': {
+      name: 'LigaDragonBall: Masters',
+      gameName: 'Dragon Ball Super Card Game (Masters)',
+      template:
+        'https://masters.ligadragonball.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#fe9700',
+        primaryHover: '#ff7800',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'fusion.ligadragonball.com.br': {
+      name: 'LigaDragonBall: Fusion',
+      gameName: 'Dragon Ball Super Card Game (Fusion)',
+      template:
+        'https://fusion.ligadragonball.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#fb570f',
+        primaryHover: '#fd7628',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'ligavanguard.com.br': {
+      name: 'LigaVanguard',
+      gameName: 'Cardfight!! Vanguard',
+      template: 'https://ligavanguard.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#262a78',
+        primaryHover: '#12154b',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'ligafab.com.br': {
+      name: 'LigaFAB',
+      gameName: 'Flesh and Blood',
+      template: 'https://ligafab.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#3a261e',
+        primaryHover: '#52382f',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'ligayugioh.com.br': {
+      name: 'LigaYuGiOh',
+      gameName: 'Yu-Gi-Oh!',
+      template: 'https://ligayugioh.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#9002b3',
+        primaryHover: '#7a0098',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'ligapokemon.com.br': {
+      name: 'LigaPokemon',
+      gameName: 'Pokémon TCG',
+      template: 'https://ligapokemon.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#ff3e32',
+        primaryHover: '#f13125',
+        secondary: '#ed3125',
+        secondaryHover: '#cd190e',
+        success: '#2faf4a',
+        warning: '#bb8412'
+      }
+    }
+  },
+  getSupportedSiteNames() {
+    return Object.values(this.LIGA_SITES).map((site) => site.name);
+  },
+  getCardUrlTemplate(hostname) {
+    const site = this.LIGA_SITES[hostname];
+    return site ? site.template : null;
+  },
+  getSiteName(hostname) {
+    const site = this.LIGA_SITES[hostname];
+    return site ? site.name : null;
+  },
+  getGameName(hostname) {
+    const site = this.LIGA_SITES[hostname];
+    return site ? site.gameName : null;
+  },
+  isLigaSite(hostname) {
+    return hostname in this.LIGA_SITES;
+  },
+  getTheme(hostname) {
+    const site = this.LIGA_SITES[hostname];
+    return site ? site.theme : null;
+  },
+  applyTheme(hostname) {
+    const theme = this.getTheme(hostname);
+    if (!theme) {
+      const root = document.documentElement;
+      root.style.removeProperty('--color-primary');
+      root.style.removeProperty('--color-primary-hover');
+      root.style.removeProperty('--color-secondary');
+      root.style.removeProperty('--color-secondary-hover');
+      root.style.removeProperty('--color-success');
+      root.style.removeProperty('--color-warning');
+      return;
+    }
+
+    const root = document.documentElement;
+    root.style.setProperty('--color-primary', theme.primary);
+    root.style.setProperty('--color-primary-hover', theme.primaryHover);
+    root.style.setProperty('--color-secondary', theme.secondary);
+    root.style.setProperty('--color-secondary-hover', theme.secondaryHover);
+    root.style.setProperty('--color-success', theme.success);
+    root.style.setProperty('--color-warning', theme.warning);
+  }
 };
