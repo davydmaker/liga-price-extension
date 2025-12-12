@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "LigaPrice",
   "short_name": "LigaPrice",
-  "version": "1.2.0",
-  "description": "Busque preços de cartas em todas as lojas da Liga (Magic, Pokemon, YuGiOh, FAB, Lorcana, DragonBall, Vanguard, StarWars, Digimon)",
+  "version": "1.2.1",
+  "description": "Busque preços de cartas em todas as lojas da Liga (Magic, Pokemon, YuGiOh, OnePiece, FAB, Lorcana, DragonBall, Vanguard, StarWars, Digimon)",
   "author": "davydmaker",
   "homepage_url": "https://github.com/davydmaker/liga-price-extension",
   "permissions": [
@@ -18,6 +18,7 @@
     "https://www.ligavanguard.com.br/*",
     "https://www.ligafab.com.br/*",
     "https://www.ligayugioh.com.br/*",
+    "https://www.ligaonepiece.com.br/*",
     "https://www.ligapokemon.com.br/*",
     "https://www.ligastarwars.com.br/*",
     "https://www.ligadigimon.com.br/*",

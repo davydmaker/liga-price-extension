@@ -85,10 +85,14 @@ Temos prazer em receber sugestões de melhorias! Para sugerir uma nova funcional
 - LigaMagic (ligamagic.com.br)
 - LigaPokemon (ligapokemon.com.br)
 - LigaYuGiOh (ligayugioh.com.br)
-- LigaVanguard (ligavanguard.com.br)
+- LigaOnePiece (ligaonepiece.com.br)
 - LigaFAB (ligafab.com.br)
+- LigaLorcana (ligalorcana.com.br)
 - LigaDragonBall Masters (masters.ligadragonball.com.br)
 - LigaDragonBall Fusion (fusion.ligadragonball.com.br)
+- LigaVanguard (ligavanguard.com.br)
+- LigaStarWars (ligastarwars.com.br)
+- LigaDigimon (ligadigimon.com.br)
 
 ### A extensão não detecta o site atual
 

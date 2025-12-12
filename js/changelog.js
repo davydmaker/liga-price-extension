@@ -1,8 +1,8 @@
 const CHANGELOG = {
-  '1.2.0': {
+  '1.2.1': {
     date: '2025-12-12',
     changes: [
-      'Suporte para todos os sites da Liga (Magic, Pokemon, YuGiOh, FAB, Lorcana, DragonBall, Vanguard, StarWars, Digimon)',
+      'Suporte para todos os sites da Liga (Magic, Pokemon, YuGiOh, OnePiece, FAB, Lorcana, DragonBall, Vanguard, StarWars, Digimon)',
       'Temas dinâmicos baseados no site ativo',
       'Contador de linhas em tempo real',
       'Limite de tamanho de arquivo (50KB)',

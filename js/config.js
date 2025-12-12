@@ -55,6 +55,21 @@ const CONFIG = {
         warning: '#e74c3c'
       }
     },
+    'ligaonepiece.com.br': {
+      name: 'LigaOnePiece',
+      gameName: 'One Piece Card Game',
+      template:
+        'https://www.ligaonepiece.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
+      theme: {
+        primary: '#eba410',
+        primaryHover: '#b98210',
+        secondary: '#b98210',
+        secondaryHover: '#b98210',
+        success: '#22b14c',
+        warning: '#bb8412'
+      }
+    },
     'ligafab.com.br': {
       name: 'LigaFAB',
       gameName: 'Flesh and Blood',
