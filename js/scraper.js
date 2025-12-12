@@ -159,12 +159,43 @@ class Scraper {
 
     const cardName = card.name;
     const cardUrlEncoded = encodeURIComponent(cardName);
-    const url = cardUrlTemplate.replace('{card_name}', cardUrlEncoded);
+    let url = cardUrlTemplate.replace('{card_name}', cardUrlEncoded);
+
+    const siteConfig = CONFIG.LIGA_SITES[hostname];
+    if (siteConfig?.supportsEditionParam) {
+      if (isGrouped && card.all_cards && card.all_cards.length > 0) {
+        const hasSpecificEditions = card.all_cards.some((c) => c.edition);
+        if (hasSpecificEditions) {
+          const promises = card.all_cards.map((individualCard) =>
+            Scraper.getCardPrice(
+              individualCard,
+              retryQueue,
+              logCallback,
+              hostname
+            )
+          );
+          await Promise.all(promises);
+          return;
+        }
+      }
+
+      const edition = card.edition;
+      if (edition) {
+        const editionEncoded = encodeURIComponent(edition);
+        url += `&ed=${editionEncoded}`;
+      }
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, CONFIG.FETCH_TIMEOUT);
 
     try {
       await Utils.sleep(CONFIG.SLEEP_BETWEEN_REQUESTS);
 
       const response = await fetch(url, {
+        signal: controller.signal,
         headers: {
           'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -173,6 +204,8 @@ class Scraper {
           'Accept-Language': 'pt-BR,pt;q=0.9'
         }
       });
+
+      clearTimeout(timeoutId);
 
       if (response.status === 429) {
         const observation = 'Limite de taxa atingido - será reprocessado';
@@ -220,8 +253,27 @@ class Scraper {
       Scraper.updateCardPrices(card, allPrices, isGrouped);
       Scraper.logCardResult(card, isGrouped, true, null, logCallback);
     } catch (error) {
-      const errorMsg = Utils.formatErrorMessage(error);
-      const observation = `Erro na requisição HTTP: ${errorMsg}`;
+      clearTimeout(timeoutId);
+
+      let errorMsg;
+      let observation;
+
+      if (error.name === 'AbortError') {
+        errorMsg = 'Timeout: Requisição demorou muito para responder (30s)';
+        observation = 'Timeout na requisição - servidor não respondeu a tempo';
+      } else if (
+        error instanceof TypeError &&
+        error.message.includes('fetch')
+      ) {
+        errorMsg = 'Erro de rede: Não foi possível conectar ao servidor';
+        observation = 'Erro de conexão - verifique sua conexão com a internet';
+      } else if (error.message) {
+        errorMsg = Utils.formatErrorMessage(error);
+        observation = `Erro na requisição HTTP: ${errorMsg}`;
+      } else {
+        errorMsg = 'Erro desconhecido na requisição';
+        observation = 'Erro desconhecido ao buscar preços';
+      }
 
       Scraper.setObservation(card, observation, isGrouped);
       Scraper.logCardResult(card, isGrouped, false, errorMsg, logCallback);

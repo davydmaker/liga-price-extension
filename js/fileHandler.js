@@ -26,6 +26,37 @@ class FileHandler {
   }
 
   /**
+   * Counts cards considering edition if site supports edition parameter
+   * @param {string} deckText - Decklist text
+   * @param {boolean} countEditionsSeparately - If true, cards with different editions count separately
+   * @returns {number} Number of cards (unique by name+edition if countEditionsSeparately is true)
+   */
+  static countCards(deckText, countEditionsSeparately = false) {
+    const lines = deckText.split('\n');
+    const cardList = lines.map((line) => line.trim()).filter((line) => line);
+
+    if (countEditionsSeparately) {
+      const uniqueCards = new Set();
+      for (const line of cardList) {
+        const editionMatch = line.match(/\[([^\]]+)\]/);
+        let cardName = line;
+        let edition = null;
+
+        if (editionMatch) {
+          edition = editionMatch[1].toUpperCase().trim();
+          cardName = line.replace(/\s*\[[^\]]+\]\s*/, ' ').trim();
+        }
+
+        const key = `${cardName.toLowerCase().trim()}|${edition || ''}`;
+        uniqueCards.add(key);
+      }
+      return uniqueCards.size;
+    } else {
+      return FileHandler.countUniqueCards(deckText);
+    }
+  }
+
+  /**
    * Reads and processes a decklist in text format
    * @param {string} deckText - Decklist text (one card per line)
    * @returns {Object} Deck object with array of cards

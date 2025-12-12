@@ -3,18 +3,20 @@ const CONFIG = {
   SLEEP_BETWEEN_REQUESTS: 300, // ms
   SLEEP_BETWEEN_BATCHES: 1000, // ms
   SLEEP_AFTER_429: 2000, // ms
+  FETCH_TIMEOUT: 30000,
   PROGRESSIVE_SLEEP_START_BATCH: 7,
   PROGRESSIVE_SLEEP_MULTIPLIERS: {
     low: 1.5,
     medium: 2.0,
     high: 2.5
   },
-  MAX_UNIQUE_CARDS: 100, // Maximum number of unique cards (same name counts as 1)
+  MAX_UNIQUE_CARDS: 100,
   LIGA_SITES: {
     'ligamagic.com.br': {
       name: 'LigaMagic',
       gameName: 'Magic: The Gathering',
-      template: 'https://ligamagic.com.br/?view=cards/card&card={card_name}',
+      template:
+        'https://www.ligamagic.com.br/?view=cards/card&card={card_name}',
       theme: {
         primary: '#ff5a00',
         primaryHover: '#e45000',
@@ -24,11 +26,69 @@ const CONFIG = {
         warning: '#e74c3c'
       }
     },
+    'ligapokemon.com.br': {
+      name: 'LigaPokemon',
+      gameName: 'Pokémon TCG',
+      template:
+        'https://www.ligapokemon.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
+      theme: {
+        primary: '#ff3e32',
+        primaryHover: '#f13125',
+        secondary: '#ed3125',
+        secondaryHover: '#cd190e',
+        success: '#2faf4a',
+        warning: '#bb8412'
+      }
+    },
+    'ligayugioh.com.br': {
+      name: 'LigaYuGiOh',
+      gameName: 'Yu-Gi-Oh!',
+      template:
+        'https://www.ligayugioh.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#9002b3',
+        primaryHover: '#7a0098',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'ligafab.com.br': {
+      name: 'LigaFAB',
+      gameName: 'Flesh and Blood',
+      template: 'https://www.ligafab.com.br/?view=cards/card&card={card_name}',
+      theme: {
+        primary: '#3a261e',
+        primaryHover: '#52382f',
+        secondary: '#e74c3c',
+        secondaryHover: '#c0392b',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
+    'ligalorcana.com.br': {
+      name: 'LigaLorcana',
+      gameName: 'Disney Lorcana',
+      template:
+        'https://www.ligalorcana.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
+      theme: {
+        primary: '#ce08ff',
+        primaryHover: '#c836ec',
+        secondary: '#d118ff',
+        secondaryHover: '#c836ec',
+        success: '#22b14c',
+        warning: '#e74c3c'
+      }
+    },
     'masters.ligadragonball.com.br': {
       name: 'LigaDragonBall: Masters',
       gameName: 'Dragon Ball Super Card Game (Masters)',
       template:
         'https://masters.ligadragonball.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
       theme: {
         primary: '#fe9700',
         primaryHover: '#ff7800',
@@ -43,6 +103,7 @@ const CONFIG = {
       gameName: 'Dragon Ball Super Card Game (Fusion)',
       template:
         'https://fusion.ligadragonball.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
       theme: {
         primary: '#fb570f',
         primaryHover: '#fd7628',
@@ -55,7 +116,9 @@ const CONFIG = {
     'ligavanguard.com.br': {
       name: 'LigaVanguard',
       gameName: 'Cardfight!! Vanguard',
-      template: 'https://ligavanguard.com.br/?view=cards/card&card={card_name}',
+      template:
+        'https://www.ligavanguard.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
       theme: {
         primary: '#262a78',
         primaryHover: '#12154b',
@@ -65,43 +128,34 @@ const CONFIG = {
         warning: '#e74c3c'
       }
     },
-    'ligafab.com.br': {
-      name: 'LigaFAB',
-      gameName: 'Flesh and Blood',
-      template: 'https://ligafab.com.br/?view=cards/card&card={card_name}',
+    'ligastarwars.com.br': {
+      name: 'LigaStarWars',
+      gameName: 'Star Wars: Unlimited',
+      template:
+        'https://www.ligastarwars.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
       theme: {
-        primary: '#3a261e',
-        primaryHover: '#52382f',
-        secondary: '#e74c3c',
-        secondaryHover: '#c0392b',
+        primary: '#07634a',
+        primaryHover: '#23705c',
+        secondary: '#327e6a',
+        secondaryHover: '#23705c',
         success: '#22b14c',
         warning: '#e74c3c'
       }
     },
-    'ligayugioh.com.br': {
-      name: 'LigaYuGiOh',
-      gameName: 'Yu-Gi-Oh!',
-      template: 'https://ligayugioh.com.br/?view=cards/card&card={card_name}',
+    'ligadigimon.com.br': {
+      name: 'LigaDigimon',
+      gameName: 'Digimon Card Game',
+      template:
+        'https://www.ligadigimon.com.br/?view=cards/card&card={card_name}',
+      supportsEditionParam: true,
       theme: {
-        primary: '#9002b3',
-        primaryHover: '#7a0098',
-        secondary: '#e74c3c',
-        secondaryHover: '#c0392b',
+        primary: '#25b1e7',
+        primaryHover: '#006cff',
+        secondary: '#006cff',
+        secondaryHover: '#006cff',
         success: '#22b14c',
         warning: '#e74c3c'
-      }
-    },
-    'ligapokemon.com.br': {
-      name: 'LigaPokemon',
-      gameName: 'Pokémon TCG',
-      template: 'https://ligapokemon.com.br/?view=cards/card&card={card_name}',
-      theme: {
-        primary: '#ff3e32',
-        primaryHover: '#f13125',
-        secondary: '#ed3125',
-        secondaryHover: '#cd190e',
-        success: '#2faf4a',
-        warning: '#bb8412'
       }
     }
   },

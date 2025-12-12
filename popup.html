@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <!-- Tela de Aceitação de Termos (primeira vez) -->
     <div id="terms-screen" class="terms-screen" style="display: none">
       <div class="terms-content">
         <h1>Aviso Legal</h1>
@@ -83,7 +82,18 @@
       </div>
     </div>
 
-    <!-- Aviso quando não estiver em um site da Liga -->
+    <div id="changelog-modal" class="changelog-modal" style="display: none">
+      <div class="changelog-modal-overlay"></div>
+      <div class="changelog-modal-content">
+        <h2 class="changelog-title">Atualização Disponível!</h2>
+        <p class="changelog-version" id="changelog-version"></p>
+        <div class="changelog-content" id="changelog-content"></div>
+        <button id="changelog-ok-btn" class="btn-primary changelog-btn">
+          Entendi
+        </button>
+      </div>
+    </div>
+
     <div id="warning-screen" class="warning-screen" style="display: none">
       <div class="warning-content">
         <div class="warning-icon">
@@ -109,7 +119,6 @@
       </div>
     </div>
 
-    <!-- Modal de Alerta -->
     <div id="alert-modal" class="alert-modal" style="display: none">
       <div class="alert-modal-overlay"></div>
       <div class="alert-modal-content">
@@ -144,18 +153,20 @@
       </header>
 
       <div class="input-section">
-        <label for="decklist-input"
+        <label for="decklist-input" id="decklist-label"
           >Cole sua decklist (uma carta por linha):</label
         >
         <textarea
           id="decklist-input"
-          placeholder="Act of Treason [GTC]&#10;Act of Treason [M10]&#10;Ajani's Presence&#10;Arcanist's Owl [NEC]"
+          placeholder="Card 1 [GTC]&#10;Card 2 [M10]&#10;Card 3&#10;Card 4 [NEC]"
           rows="8"
         ></textarea>
+        <div class="line-counter" id="line-counter">0 linhas</div>
 
         <div class="file-input-wrapper">
           <label for="file-input" class="file-label"
-            >Ou selecione um arquivo</label
+            >Ou selecione um arquivo
+            <span class="file-size-hint">(máx. 50KB)</span></label
           >
           <input
             type="file"
@@ -166,7 +177,10 @@
         </div>
 
         <div class="config-section">
-          <label for="batch-size">Cartas processadas em paralelo:</label>
+          <label for="batch-size"
+            >Cartas processadas em paralelo:
+            <span class="config-hint">(máx. 5)</span></label
+          >
           <input type="number" id="batch-size" min="1" max="5" value="5" />
         </div>
 
@@ -177,6 +191,10 @@
       </div>
 
       <div id="progress-section" class="progress-section" style="display: none">
+        <div class="processing-warning" id="processing-warning">
+          <strong>Importante:</strong> Mantenha esta janela aberta e não troque
+          de guia durante o processamento para não perder o progresso.
+        </div>
         <div class="progress-bar-container">
           <div id="progress-bar" class="progress-bar"></div>
         </div>
@@ -203,7 +221,7 @@
           >
         </p>
         <p class="footer-credits">
-          made with
+          <span id="version-text"></span>made with
           <svg
             class="heart-icon"
             viewBox="0 0 24 24"
@@ -229,6 +247,7 @@
 
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/changelog.js"></script>
     <script src="js/htmlParser.js"></script>
     <script src="js/priceExtractor.js"></script>
     <script src="js/fileHandler.js"></script>

@@ -19,23 +19,6 @@ async function checkLigaSite() {
   }
 }
 
-async function getCurrentLigaSite() {
-  try {
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    });
-    if (tab?.url) {
-      const url = new URL(tab.url);
-      const hostname = url.hostname.replace(/^www\./, '');
-      return CONFIG.getSiteName(hostname);
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 function showAlert(message) {
   const modal = document.getElementById('alert-modal');
   const messageElement = document.getElementById('alert-modal-message');
@@ -67,6 +50,30 @@ function showAlert(message) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  window.addEventListener('beforeunload', () => {
+    if (isProcessing) {
+      cancelRequested = true;
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    if (isProcessing) {
+      cancelRequested = true;
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && isProcessing) {
+      cancelRequested = true;
+    }
+  });
+
+  const versionText = document.getElementById('version-text');
+  if (versionText) {
+    const manifest = chrome.runtime.getManifest();
+    versionText.textContent = `v${manifest.version} - `;
+  }
+
   const termsScreen = document.getElementById('terms-screen');
   const mainContainer = document.getElementById('main-container');
   const warningScreen = document.getElementById('warning-screen');
@@ -88,10 +95,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         button.style.border = 'none';
         button.style.borderRadius = '4px';
         button.style.cursor = 'pointer';
-        button.style.transition = 'all 0.2s';
+        button.style.transition = 'background-color 0.2s';
         button.style.fontWeight = '600';
+        button.style.boxShadow = 'none';
 
-        // Hover effect
         button.addEventListener('mouseenter', () => {
           button.style.backgroundColor =
             site.theme.primaryHover || site.theme.primary;
@@ -117,11 +124,57 @@ document.addEventListener('DOMContentLoaded', async () => {
       warningScreen.style.display = screen === 'warning' ? 'flex' : 'none';
   }
 
-  const isOnLigaSite = await checkLigaSite();
+  async function checkVersionUpdate() {
+    const manifest = chrome.runtime.getManifest();
+    const currentVersion = manifest.version;
 
-  if (!isOnLigaSite) {
-    showScreen('warning');
-    return;
+    chrome.storage.local.get(['changelogSeenVersions'], (result) => {
+      const seenVersions = result.changelogSeenVersions || [];
+
+      if (seenVersions.includes(currentVersion)) {
+        return;
+      }
+
+      const changelog = getChangelog(currentVersion);
+      if (changelog) {
+        showChangelogModal(currentVersion, changelog);
+        seenVersions.push(currentVersion);
+        chrome.storage.local.set({ changelogSeenVersions: seenVersions });
+      }
+    });
+  }
+
+  function showChangelogModal(version, changelog) {
+    const modal = document.getElementById('changelog-modal');
+    const versionEl = document.getElementById('changelog-version');
+    const contentEl = document.getElementById('changelog-content');
+    const okBtn = document.getElementById('changelog-ok-btn');
+
+    if (!modal || !versionEl || !contentEl || !okBtn) return;
+
+    versionEl.textContent = `Versão ${version} - ${changelog.date}`;
+
+    const ul = document.createElement('ul');
+    changelog.changes.forEach((change) => {
+      const li = document.createElement('li');
+      li.textContent = change;
+      ul.appendChild(li);
+    });
+    contentEl.innerHTML = '';
+    contentEl.appendChild(ul);
+
+    modal.style.display = 'flex';
+
+    okBtn.onclick = () => {
+      modal.style.display = 'none';
+    };
+
+    const overlay = modal.querySelector('.changelog-modal-overlay');
+    if (overlay) {
+      overlay.onclick = () => {
+        modal.style.display = 'none';
+      };
+    }
   }
 
   const [tab] = await chrome.tabs.query({
@@ -129,30 +182,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentWindow: true
   });
 
+  let currentHostname = null;
+  if (tab?.url) {
+    const url = new URL(tab.url);
+    currentHostname = url.hostname.replace(/^www\./, '');
+  }
+
   const dynamicSubtitle = document.getElementById('dynamic-subtitle');
   const subtitleHint = document.getElementById('subtitle-hint');
 
-  if (tab?.url) {
-    const url = new URL(tab.url);
-    const hostname = url.hostname.replace(/^www\./, '');
+  if (currentHostname && CONFIG.isLigaSite(currentHostname)) {
+    CONFIG.applyTheme(currentHostname);
+    const siteName = CONFIG.getSiteName(currentHostname);
+    const gameName = CONFIG.getGameName(currentHostname);
+    const siteConfig = CONFIG.LIGA_SITES[currentHostname];
+    const supportsEditionParam = siteConfig?.supportsEditionParam || false;
 
-    CONFIG.applyTheme(hostname);
+    if (dynamicSubtitle) {
+      dynamicSubtitle.innerHTML = `Buscando preços de cartas de <b>${gameName}</b> na <b>${siteName}</b>`;
+    }
+    if (subtitleHint) {
+      subtitleHint.style.display = 'block';
+    }
 
-    if (CONFIG.isLigaSite(hostname)) {
-      const siteName = CONFIG.getSiteName(hostname);
-      const gameName = CONFIG.getGameName(hostname);
-      if (dynamicSubtitle) {
-        dynamicSubtitle.textContent = `Buscando preços de cartas de <b>${gameName}</b> na <b>${siteName}</b>`;
-      }
-      if (subtitleHint) {
-        subtitleHint.style.display = 'block';
-      }
-    } else {
-      if (dynamicSubtitle) {
-        dynamicSubtitle.textContent = 'Abra um site da Liga para começar';
-      }
-      if (subtitleHint) {
-        subtitleHint.style.display = 'none';
+    const decklistLabel = document.getElementById('decklist-label');
+    if (decklistLabel) {
+      if (supportsEditionParam) {
+        decklistLabel.innerHTML =
+          'Cole sua decklist:<br/><sup><i>(uma carta por linha; múltiplas edições da mesma carta contam separadamente)</i></sup>';
+      } else {
+        decklistLabel.innerHTML =
+          'Cole sua decklist:<br/><sup><i>(uma carta por linha; múltiplas edições da mesma carta contam como uma única carta)</i></sup>';
       }
     }
   } else {
@@ -162,28 +222,65 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (subtitleHint) {
       subtitleHint.style.display = 'none';
     }
+
+    const decklistLabel = document.getElementById('decklist-label');
+    if (decklistLabel) {
+      decklistLabel.textContent = 'Cole sua decklist (uma carta por linha):';
+    }
   }
 
-  chrome.storage.local.get(['termsAccepted'], (result) => {
-    if (result.termsAccepted) {
+  chrome.storage.local.get(['acceptedSites'], (result) => {
+    const acceptedSites = result.acceptedSites || [];
+    const isOnLigaSite = currentHostname && CONFIG.isLigaSite(currentHostname);
+    const hasAcceptedForSite =
+      currentHostname && acceptedSites.includes(currentHostname);
+
+    if (isOnLigaSite && hasAcceptedForSite) {
       showScreen('main');
       initMainInterface();
-    } else {
+    } else if (isOnLigaSite && !hasAcceptedForSite) {
       showScreen('terms');
+    } else {
+      showScreen('warning');
     }
+
+    checkVersionUpdate();
   });
 
   if (acceptTermsBtn) {
     acceptTermsBtn.addEventListener('click', async () => {
-      const isOnLigaSite = await checkLigaSite();
-      if (!isOnLigaSite) {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      });
+
+      if (!tab?.url) {
         showScreen('warning');
         return;
       }
 
-      chrome.storage.local.set({ termsAccepted: true }, () => {
-        showScreen('main');
-        initMainInterface();
+      const url = new URL(tab.url);
+      const hostname = url.hostname.replace(/^www\./, '');
+
+      if (!CONFIG.isLigaSite(hostname)) {
+        showScreen('warning');
+        return;
+      }
+
+      chrome.storage.local.get(['acceptedSites'], (result) => {
+        const acceptedSites = result.acceptedSites || [];
+        if (!acceptedSites.includes(hostname)) {
+          acceptedSites.push(hostname);
+          chrome.storage.local.set({ acceptedSites }, () => {
+            showScreen('main');
+            initMainInterface();
+            checkVersionUpdate();
+          });
+        } else {
+          showScreen('main');
+          initMainInterface();
+          checkVersionUpdate();
+        }
       });
     });
   }
@@ -209,6 +306,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resultSection = document.getElementById('result-section');
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
+    const lineCounter = document.getElementById('line-counter');
+
+    const MAX_FILE_SIZE = 50 * 1024; // 50KB in bytes
+
+    function updateLineCounter() {
+      if (!lineCounter) return;
+
+      const text = decklistInput.value;
+      const lines = text.split('\n').filter((line) => line.trim());
+      const lineCount = lines.length;
+
+      lineCounter.textContent = `${lineCount} linhas`;
+    }
 
     function addLog(message, type = 'info') {
       const lines = message.split('\n');
@@ -262,11 +372,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       chrome.storage.local.set({ batchSize: value });
     });
 
-    function validateCardCount(deckText) {
-      const uniqueCount = FileHandler.countUniqueCards(deckText);
-      if (uniqueCount > CONFIG.MAX_UNIQUE_CARDS) {
+    async function validateCardCount(deckText) {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      });
+      let hostname = null;
+      if (tab?.url) {
+        const url = new URL(tab.url);
+        hostname = url.hostname.replace(/^www\./, '');
+      }
+
+      const siteConfig = hostname ? CONFIG.LIGA_SITES[hostname] : null;
+      const countEditionsSeparately = siteConfig?.supportsEditionParam || false;
+
+      const cardCount = FileHandler.countCards(
+        deckText,
+        countEditionsSeparately
+      );
+      if (cardCount > CONFIG.MAX_UNIQUE_CARDS) {
+        const siteName = siteConfig?.name || 'este site';
+        const countType = countEditionsSeparately
+          ? 'cartas (incluindo diferentes edições)'
+          : 'cartas únicas';
         showAlert(
-          `A decklist contém ${uniqueCount} cartas únicas. O limite máximo é ${CONFIG.MAX_UNIQUE_CARDS} cartas. Por favor, reduza a quantidade de cartas.`
+          `A decklist contém ${cardCount} ${countType}. O limite máximo é ${CONFIG.MAX_UNIQUE_CARDS} cartas. Por favor, reduza a quantidade de cartas.`
         );
         return false;
       }
@@ -276,18 +406,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+          showAlert(
+            `O arquivo é muito grande (${(file.size / 1024).toFixed(
+              1
+            )}KB). O tamanho máximo permitido é 50KB.`
+          );
+          fileInput.value = '';
+          return;
+        }
+
         const reader = new FileReader();
         reader.onload = (event) => {
           const fileContent = event.target.result;
-          if (validateCardCount(fileContent)) {
-            decklistInput.value = fileContent;
-          } else {
-            fileInput.value = '';
-          }
+          validateCardCount(fileContent).then((isValid) => {
+            if (isValid) {
+              decklistInput.value = fileContent;
+              updateLineCounter();
+            } else {
+              fileInput.value = '';
+            }
+          });
         };
         reader.readAsText(file);
       }
     });
+
+    decklistInput.addEventListener('input', updateLineCounter);
+    decklistInput.addEventListener('paste', () => {
+      setTimeout(updateLineCounter, 0);
+    });
+
+    updateLineCounter();
 
     processBtn.addEventListener('click', async () => {
       if (isProcessing) return;
@@ -310,7 +460,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
       }
 
-      if (!validateCardCount(decklistText)) {
+      if (!(await validateCardCount(decklistText))) {
         return;
       }
 
@@ -333,7 +483,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       chrome.storage.local.set({ batchSize });
 
-      logContent.innerHTML = '';
+      logContent.textContent = '';
       logSection.style.display = 'block';
 
       isProcessing = true;
@@ -370,7 +520,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         addLog(`Total de cartas: ${deck.cards.length}`, 'info');
-        addLog(`Processando ${batchSize} carta(s) em paralelo...`, 'info');
+        addLog(
+          `Configurado para processar ${batchSize} carta(s) em paralelo...`,
+          'info'
+        );
 
         await BatchProcessor.getCardPrices(
           deck,

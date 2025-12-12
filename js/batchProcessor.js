@@ -190,7 +190,7 @@ class BatchProcessor {
       const batchNum = Math.floor(batchStart / batchSize) + 1;
 
       const batchTimestamp = Utils.getTimestamp();
-      const batchMessage = `[${batchTimestamp}] Processando lote ${batchNum} (${batch.length} cartas em paralelo)...`;
+      const batchMessage = `[${batchTimestamp}] Processando lote ${batchNum} (${batch.length} carta(s) em paralelo)...`;
       if (logCallback) {
         logCallback('');
         logCallback(batchMessage);

@@ -95,26 +95,117 @@
         background: #e45000;
         text-decoration: none;
       }
+
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 10000;
+        background: #ff5a00;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .skip-link:focus {
+        position: fixed;
+        left: 10px;
+        top: 10px;
+      }
+
+      .table-of-contents {
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 30px 0;
+      }
+
+      .table-of-contents h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 18px;
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .table-of-contents ul {
+        margin-left: 20px;
+        margin-bottom: 0;
+      }
+
+      .table-of-contents li {
+        margin-bottom: 8px;
+      }
+
+      .table-of-contents a {
+        color: #ff5a00;
+        text-decoration: none;
+      }
+
+      .table-of-contents a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
+    <a
+      href="#main-content"
+      class="skip-link"
+      aria-label="Pular navegação e ir para o conteúdo principal"
+      >Pular para conteúdo principal</a
+    >
+    <div class="container" role="main" id="main-content">
       <h1>Aviso Legal - LigaPrice</h1>
 
-      <h2>DISCLAIMER E TERMOS DE USO</h2>
+      <nav
+        class="table-of-contents"
+        role="navigation"
+        aria-label="Índice do documento"
+      >
+        <h2>Índice</h2>
+        <ul>
+          <li><a href="#disclaimer">Disclaimer e Termos de Uso</a></li>
+          <li><a href="#natureza">1. Natureza da Extensão</a></li>
+          <li><a href="#uso">2. Uso da Extensão</a></li>
+          <li><a href="#limitacoes-tecnicas">2.1. Limitações Técnicas</a></li>
+          <li>
+            <a href="#responsabilidade">3. Responsabilidade do Usuário</a>
+          </li>
+          <li><a href="#dados">4. Privacidade e Dados</a></li>
+          <li>
+            <a href="#limitacao-responsabilidade"
+              >5. Limitação de Responsabilidade</a
+            >
+          </li>
+          <li><a href="#propriedade">6. Propriedade Intelectual</a></li>
+          <li>
+            <a href="#conformidade"
+              >7. Conformidade com Termos das Lojas da Liga</a
+            >
+          </li>
+          <li><a href="#modificacoes">8. Modificações e Descontinuação</a></li>
+          <li><a href="#contato">9. Suporte e Contato</a></li>
+          <li><a href="#aceitacao">10. Aceitação dos Termos</a></li>
+        </ul>
+      </nav>
+
+      <h2 id="disclaimer">DISCLAIMER E TERMOS DE USO</h2>
       <p>
         <strong>IMPORTANTE:</strong> Ao utilizar esta extensão, você concorda
         com os seguintes termos e condições.
       </p>
 
-      <h2>1. NATUREZA DA EXTENSÃO</h2>
+      <h2 id="natureza">1. NATUREZA DA EXTENSÃO</h2>
       <p>
         A extensão LigaPrice é uma ferramenta de código aberto desenvolvida para
         fins educacionais e de uso pessoal, que facilita a consulta de preços de
         cartas através das lojas da Liga.
       </p>
 
-      <h2>2. USO DA EXTENSÃO</h2>
+      <h2 id="uso">2. USO DA EXTENSÃO</h2>
       <p>Esta extensão:</p>
       <ul>
         <li>
@@ -143,7 +234,7 @@
         </li>
       </ul>
 
-      <h2>2.1. LIMITAÇÕES TÉCNICAS</h2>
+      <h2 id="limitacoes-tecnicas">2.1. LIMITAÇÕES TÉCNICAS</h2>
       <p>
         Para garantir o uso responsável e evitar sobrecarga nos servidores das
         lojas da Liga, esta extensão possui as seguintes limitações técnicas:
@@ -181,7 +272,7 @@
         em conformidade com os termos do site.
       </p>
 
-      <h2>3. RESPONSABILIDADE DO USUÁRIO</h2>
+      <h2 id="responsabilidade">3. RESPONSABILIDADE DO USUÁRIO</h2>
       <p>O usuário da extensão:</p>
       <ul>
         <li>
@@ -217,23 +308,40 @@
         </li>
       </ul>
 
-      <h2>4. DADOS E INFORMAÇÕES</h2>
+      <h2 id="dados">4. PRIVACIDADE E DADOS</h2>
+      <p>
+        <strong>Coleta de Dados:</strong> Esta extensão não coleta, armazena ou
+        transmite dados pessoais para servidores externos. Todos os dados são
+        processados localmente no seu navegador.
+      </p>
+      <p>
+        <strong>Armazenamento Local:</strong> A extensão utiliza apenas o
+        armazenamento local do navegador (chrome.storage.local) para salvar suas
+        preferências, como:
+      </p>
       <ul>
-        <li>
-          Os dados coletados são <strong>apenas para uso pessoal</strong> do
-          usuário
-        </li>
-        <li>
-          A extensão <strong>não armazena</strong> dados em servidores externos
-        </li>
-        <li>
-          Todos os dados processados permanecem <strong>localmente</strong> no
-          dispositivo do usuário
-        </li>
-        <li>A extensão <strong>não compartilha</strong> dados com terceiros</li>
+        <li>Aceitação dos termos de uso por site</li>
+        <li>Tamanho do lote (batch size) configurado</li>
+        <li>Versões do changelog já visualizadas</li>
       </ul>
+      <p>
+        Esses dados permanecem apenas no seu dispositivo e nunca são enviados
+        para servidores externos.
+      </p>
+      <p>
+        <strong>Dados de Navegação:</strong> A extensão verifica apenas o
+        hostname da aba atual para determinar qual site da Liga está aberto.
+        Esta informação não é armazenada ou transmitida.
+      </p>
+      <p>
+        <strong>Processamento de Dados:</strong> Os dados coletados são
+        <strong>apenas para uso pessoal</strong> do usuário. Todos os dados
+        processados permanecem <strong>localmente</strong> no dispositivo do
+        usuário e a extensão <strong>não compartilha</strong> dados com
+        terceiros.
+      </p>
 
-      <h2>5. LIMITAÇÃO DE RESPONSABILIDADE</h2>
+      <h2 id="limitacao-responsabilidade">5. LIMITAÇÃO DE RESPONSABILIDADE</h2>
       <p>O desenvolvedor desta extensão:</p>
       <ul>
         <li>
@@ -274,7 +382,7 @@
         </li>
       </ul>
 
-      <h2>6. PROPRIEDADE INTELECTUAL</h2>
+      <h2 id="propriedade">6. PROPRIEDADE INTELECTUAL</h2>
       <ul>
         <li>
           Todos os direitos sobre os sites das lojas da Liga, incluindo marcas,
@@ -291,7 +399,7 @@
         </li>
       </ul>
 
-      <h2>7. CONFORMIDADE COM TERMOS DAS LOJAS DA LIGA</h2>
+      <h2 id="conformidade">7. CONFORMIDADE COM TERMOS DAS LOJAS DA LIGA</h2>
       <p>
         <strong>ATENÇÃO:</strong> Os Termos e Condições Gerais de Uso das lojas
         da Liga proíbem expressamente a "utilização de nenhum dispositivo,
@@ -353,7 +461,7 @@
         <li>Indenizações por danos causados</li>
       </ul>
 
-      <h2>8. MODIFICAÇÕES E DESCONTINUAÇÃO</h2>
+      <h2 id="modificacoes">8. MODIFICAÇÕES E DESCONTINUAÇÃO</h2>
       <p>O desenvolvedor se reserva o direito de:</p>
       <ul>
         <li>
@@ -366,22 +474,35 @@
         </li>
       </ul>
 
-      <h2>9. CONTATO</h2>
+      <h2 id="contato">9. SUPORTE E CONTATO</h2>
+      <p>Para reportar bugs, sugerir funcionalidades ou obter suporte:</p>
+      <ul>
+        <li>
+          <strong>GitHub Issues:</strong>
+          <a
+            href="https://github.com/davydmaker/liga-price-extension/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Abrir página de issues do GitHub em nova aba"
+            >Reportar problemas ou sugerir melhorias</a
+          >
+        </li>
+        <li>
+          <strong>Documentação:</strong> Consulte o arquivo SUPPORT.md no
+          repositório
+        </li>
+      </ul>
       <p>
-        Para questões relacionadas a esta extensão, abra um issue no
-        repositório:
-        <a
-          href="https://github.com/davydmaker/liga-price-extension/issues"
-          target="_blank"
-          >https://github.com/davydmaker/liga-price-extension/issues</a
-        >
+        <strong>Nota:</strong> Este é um projeto de código aberto mantido pela
+        comunidade. Respostas podem levar algum tempo dependendo da
+        disponibilidade dos mantenedores.
       </p>
       <p>
         Para questões relacionadas às lojas da Liga, entre em contato através
         dos canais oficiais de cada loja.
       </p>
 
-      <h2>10. ACEITAÇÃO DOS TERMOS</h2>
+      <h2 id="aceitacao">10. ACEITAÇÃO DOS TERMOS</h2>
       <p>Ao utilizar esta extensão, você declara que:</p>
       <ul>
         <li>Leu e compreendeu este aviso legal</li>
@@ -390,18 +511,30 @@
         <li>Está ciente dos possíveis riscos e limitações</li>
       </ul>
 
-      <div class="footer">
+      <footer class="footer" role="contentinfo">
         <p><strong>Última atualização:</strong> 10/12/2025</p>
         <p>
           <strong>Desenvolvedor:</strong>
-          <a href="https://davydmaker.com.br/" target="_blank">dvd</a>
+          <a
+            href="https://davydmaker.com.br/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Abrir site do desenvolvedor em nova aba"
+            >dvd</a
+          >
         </p>
         <p>
           <strong>Licença:</strong> Esta extensão é fornecida "como está", sem
           garantias de qualquer tipo.
         </p>
-        <a href="#" id="close-btn" class="back-link">Fechar</a>
-      </div>
+        <a
+          href="#"
+          id="close-btn"
+          class="back-link"
+          aria-label="Fechar esta janela"
+          >Fechar</a
+        >
+      </footer>
     </div>
     <script src="./js/legal.js"></script>
   </body>
