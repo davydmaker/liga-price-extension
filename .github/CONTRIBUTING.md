@@ -41,14 +41,14 @@ Temos prazer em receber sugestões de melhorias! Para sugerir uma nova funcional
 1. **Clone o repositório**
    ```bash
    git clone https://github.com/davydmaker/liga-price-extension.git
-   cd liga-price-extension/extension
+   cd liga-price-extension
    ```
 
 2. **Carregue a extensão no Chrome**
    - Abra `chrome://extensions/`
    - Ative o "Modo do desenvolvedor"
    - Clique em "Carregar sem compactação"
-   - Selecione a pasta `extension/`
+   - Selecione a pasta
 
 3. **Faça suas alterações**
    - Crie uma branch para sua feature/fix: `git checkout -b minha-feature`
@@ -58,7 +58,7 @@ Temos prazer em receber sugestões de melhorias! Para sugerir uma nova funcional
 #### Estrutura do Projeto
 
 ```
-extension/
+liga-price-extension
 ├── .github/          # Arquivos do GitHub (CODE_OF_CONDUCT, CONTRIBUTING)
 ├── css/              # Estilos CSS
 │   └── styles.css

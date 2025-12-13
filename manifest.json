@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "LigaPrice",
   "short_name": "LigaPrice",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Busque preços de cartas em todas as lojas da Liga (Magic, Pokemon, YuGiOh, OnePiece, FAB, Lorcana, DragonBall, Vanguard, StarWars, Digimon)",
   "author": "davydmaker",
   "homepage_url": "https://github.com/davydmaker/liga-price-extension",
@@ -38,14 +38,18 @@
     "default_popup": "popup.html",
     "default_title": "LigaPrice - Buscar preços de cartas",
     "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "34": "icons/icon-34.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
     }
   },
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "34": "icons/icon-34.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   }
 }

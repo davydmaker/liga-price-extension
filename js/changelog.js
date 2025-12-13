@@ -1,5 +1,5 @@
 const CHANGELOG = {
-  '1.2.1': {
+  '1.2.2': {
     date: '2025-12-12',
     changes: [
       'Suporte para todos os sites da Liga (Magic, Pokemon, YuGiOh, OnePiece, FAB, Lorcana, DragonBall, Vanguard, StarWars, Digimon)',
