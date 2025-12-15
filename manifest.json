@@ -2,14 +2,14 @@
   "manifest_version": 3,
   "name": "LigaPrice",
   "short_name": "LigaPrice",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Busque preços de cartas em todas as lojas da Liga (Magic, Pokemon, YuGiOh, OnePiece, FAB, Lorcana, DragonBall, StarWars, Digimon...)",
   "author": "davydmaker",
   "homepage_url": "https://github.com/davydmaker/liga-price-extension",
   "permissions": [
     "downloads",
     "storage",
-    "tabs"
+    "activeTab"
   ],
   "host_permissions": [
     "https://www.ligamagic.com.br/*",
@@ -23,16 +23,6 @@
     "https://www.ligastarwars.com.br/*",
     "https://www.ligadigimon.com.br/*",
     "https://www.ligalorcana.com.br/*"
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "legal.html"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
   ],
   "action": {
     "default_popup": "popup.html",
