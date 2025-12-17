@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "LigaPrice",
   "short_name": "LigaPrice",
-  "version": "1.2.3",
-  "description": "Busque preços de cartas em todas as lojas da Liga (Magic, Pokemon, YuGiOh, OnePiece, FAB, Lorcana, DragonBall, StarWars, Digimon...)",
+  "version": "1.2.4",
+  "description": "Busque e organize preços de cartas através das lojas da Liga. Processe listas de cartas em paralelo e exporte os resultados em CSV.",
   "author": "davydmaker",
   "homepage_url": "https://github.com/davydmaker/liga-price-extension",
   "permissions": [
